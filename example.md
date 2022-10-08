@@ -4,7 +4,7 @@
 
 本文使用 Bilibili-Markdown 编写，主要用于效果展示，简介和安装请点击下方链接查看
 
-[https://github.com/LuckyPuppy514/Bilibili-Markdown](https://github.com/LuckyPuppy514/Bilibili-Markdown)
+[https://www.bilibili.com/read/cv18986956](https://www.bilibili.com/read/cv18986956)
 
 ## 🌲 原生语法
 

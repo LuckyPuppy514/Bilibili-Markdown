@@ -9,7 +9,7 @@
 
 > 如果本项目对你有帮助，请帮忙点击 GitHub 右上角的小星星 🌟，万分感谢 🙏
 
-![20221008140233](http://article.biliimg.com/bfs/article/cc63b86d08f4b845a8ea9eefed8741f7153c675a.png)
+![cc63b86d08f4b845a8ea9eefed8741f7153c675a](https://cdn.jsdelivr.net/gh/LuckyPuppy514/pic-bed/common/cc63b86d08f4b845a8ea9eefed8741f7153c675a.png)
 
 ## 🐳 安装
 
