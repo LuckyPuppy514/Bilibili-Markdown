@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Bilibili-Markdown</title>
+    <meta name="description" content="B站专栏 Markdown 编辑器">
+    <link rel="stylesheet" href="./static/editor.md/css/editormd.min.css" />
+    <style>
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            margin: 0 !important;
+        }
+
+        #main-div {
+            width: 100%;
+            height: 100%;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        #editor-div {
+            width: 100% !important;
+            height: 100% !important;
+            border: none;
+        }
+
+        .show {
+            display: block !important;
+        }
+
+        .hide {
+            display: none !important;
+        }
+
+        /*工具栏*/
+        .editormd-toolbar {
+            border: none;
+            margin-bottom: 10px;
+        }
+
+        .editormd-toolbar-container {
+            height: 42px !important;
+            border: none;
+            padding-left: 8px;
+            padding-right: 2px;
+            background-color: #f1f3f7;
+        }
+
+        .editormd-menu {
+            border: none;
+        }
+
+        .editormd-menu>li {
+            padding: 5px 1px !important;
+            text-align: center;
+        }
+
+        .editormd-menu>li.divider {
+            position: relative;
+            line-height: 35px;
+            border-right: 1px solid white;
+        }
+
+        .editormd-menu>li>a {
+            border: 1px solid #f1f3f7;
+        }
+
+        .editormd-menu>li>a>i {
+            font-size: 17px !important;
+            font-weight: 400;
+            color: black;
+        }
+
+        .editormd-menu>li>a>[class*=fa-],
+        #toolbar-list-div li>[class*=fa-] {
+            font-size: 16px;
+            color: #222222;
+            -webkit-text-stroke: 0.7px #f1f3f7;
+        }
+
+        #toolbar-list-div li>.fa-list-ol,
+        .editormd-menu>li>a>.fa-list-ol {
+            -webkit-text-stroke: 0.5px #f1f3f7 !important;
+        }
+
+        .editormd-menu>li>a>.fa-mobile-phone,
+        .editormd-menu>li>a>.fa-desktop {
+            -webkit-text-stroke: 0.3px #f1f3f7 !important;
+        }
+
+        .editormd-menu>li>a>.fa-save,
+        .editormd-menu>li>a>.fa-eye-slash {
+            -webkit-text-stroke: 0.1px #f1f3f7 !important;
+        }
+
+        .editormd-menu>li>a>.fa-arrows-alt {
+            padding-left: 14px;
+            padding-right: 14px;
+        }
+
+        .editormd-menu>li>a:hover,
+        .editormd-menu>li>a.active {
+            border: 1px solid #f1f3f7;
+            background: rgba(0, 0, 0, 0);
+        }
+
+        .editormd-menu>li>a>.fa:hover {
+            color: #00a1d6 !important;
+        }
+
+        /*图标*/
+        .editormd-menu .fa-html5 {
+            font-size: 22px !important;
+            color: #f08903 !important;
+            -webkit-text-stroke: 0.2px #f1f3f7 !important;
+            margin-top: -3px !important;
+        }
+
+        /*手机端预览*/
+        .editormd-menu .fa-mobile-phone {
+            font-size: 25px !important;
+            position: absolute;
+            top: -2px;
+        }
+
+        /*使用帮助*/
+        .editormd-menu .fa-question-circle {
+            padding-left: 3px !important;
+            padding-right: 3px !important;
+        }
+
+        .editormd-help-dialog {
+            width: 656px !important;
+            height: 342px !important;
+        }
+
+        .editormd-dialog-container {
+            padding: 5px 20px !important;
+        }
+
+        .editormd-dialog-container .markdown-body {
+            height: 240px !important;
+            padding-top: 3px !important;
+        }
+
+        /*预览样式*/
+        .editormd-html-preview,
+        .editormd-preview-container p {
+            font-size: 16px !important;
+        }
+
+        /*链接*/
+        .editormd-preview a {
+            color: #fb7299
+        }
+
+        /*表格*/
+        .editormd-preview table {
+            height: auto;
+            max-height: 100%;
+            overflow: hidden;
+            word-break: break-all !important;
+            padding: 0px 16px 5px 16px;
+        }
+
+        /*列表*/
+        .editormd-preview ul {
+            list-style-type: disc !important;
+        }
+
+        .editormd-preview ol,
+        .editormd-preview ul {
+            margin: 10px 0 !important;
+            font-size: 15px !important;
+        }
+
+        .editormd-preview ul ol {
+            list-style: decimal !important;
+        }
+
+        /*代码块和图片*/
+        .editormd-preview figcaption {
+            color: #999;
+            font-size: 14px;
+            line-height: 1.5;
+            text-align: center;
+            margin-top: 10px;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .editormd-preview .code-box,
+        .editormd-preview .img-box {
+            margin: 0 !important;
+            margin-bottom: 20px !important;
+        }
+
+        .editormd-preview pre[class*=language-] {
+            margin: .5em 0;
+            overflow: auto;
+        }
+
+        .editormd-preview pre.prettyprint,
+        .editormd-preview-container pre.prettyprint {
+            border: none !important;
+            border-radius: 0px !important;
+            background: #f5f2f0 !important;
+            padding: 2px !important;
+        }
+
+        .editormd-preview ol.linenums,
+        .editormd-preview-container ol.linenums {
+            margin-left: -25px !important;
+            color: rgba(0, 0, 0, 0) !important;
+        }
+
+        .editormd-preview-container .linenums li.L1,
+        li.L3,
+        li.L5,
+        li.L7,
+        li.L9 {
+            background-color: #f5f2f0 !important;
+        }
+
+        .editormd-preview .img-box {
+            text-align: center;
+            margin: 15px 0 !important;
+            display: block;
+            position: relative;
+        }
+
+        .editormd-preview img {
+            padding: 0px 0px 0px 0px;
+        }
+
+        /*分割线*/
+        .editormd-preview .cut-off-1 {
+            width: 260px;
+        }
+
+        .editormd-preview .cut-off-2 {
+            width: 100%;
+            height: 2px !important;
+        }
+
+        .editormd-preview .cut-off-3 {
+            width: 300px;
+        }
+
+        .editormd-preview .cut-off-4 {
+            width: 80px;
+            height: 15px;
+        }
+
+        .editormd-preview .cut-off-5 {
+            width: 214px;
+        }
+
+        .editormd-preview .cut-off-6 {
+            padding: 10px 0px 10px 0px !important;
+        }
+
+        /*标题*/
+        .editormd-preview h1,
+        .editormd-preview h2 {
+            border: none !important;
+        }
+
+        .editormd-preview h1,
+        .editormd-preview h2,
+        .editormd-preview h3,
+        .editormd-preview h4,
+        .editormd-preview h5,
+        .editormd-preview h6 {
+            line-height: 30px !important;
+            margin: 6px 0 !important;
+        }
+
+        /*引用*/
+        .editormd-preview blockquote,
+        .editormd-preview-container blockquote {
+            border: none !important;
+        }
+
+        .editormd-preview blockquote:before,
+        .editormd-preview-container blockquote:before {
+            margin-bottom: -23px;
+            margin-left: -24px;
+            content: "";
+            width: 22px;
+            height: 20px;
+            display: block;
+            background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAmCAYAAAC29NkdAAAAAXNSR0IArs4c6QAABH9JREFUWAntmF1oVEcUx7M3m/gR2xqRFZE0C8kmeZD6rSFSFOqTllKkIBaLfRDRUhAV8UFpaUHBJ78FoeiD2NKCFRX7CSJVUNEHpT7kkwSCkSaSxCC7ye4m6+/c3lnmTu6ud+/Ni5CBu3POmXP+858zMzt3bqTMZ2lra/sQ15088xsaGjZGIpGcz9CibuCudnCBbfgI3IweENUVL7mjo2P9xMTEiVwut0S1Y9uMfEXpQer29vY1YApus4rHth35B6VLXZBgZ2dnLJvNnh0fH/9MDxAZwpuoAhHs7u6em06nT0LsC56Igf0xuoug6WD7t7a2foBwg+d92+D8kP7fEU8zFX8iT+htfuSurq5EJpMR3EbD/zZ4p8C9Tj2ut00iSJo3kKGrOM1RjgQ9YbT7mpqabilbqTXLopnZ+I24ai22zbKs/RC7qdlcoosgC7aJ1vuQeU+8ICYb4RgAh82RSbvfwnKpgdwjcGMqBrxz4O6lTiubV51fg7I2xsbGruOkyKUY3ZZEIiFTErj09vbOSiaT1zRyGXC/hNyPfkDzBFm4BwhIOEFpADdD7g8/IMV8IPcVWMvER2YBeRvkfikWo7dZovT3988hcLfWcJD1FpocmBVg7lW4EDwKrm9yEmdncHBwcAeyvXgBGamurnZtddVBqTUbbiskFzlxaab2TKkYdgYJ+lQFAngxFou9UnrIOo/LwH+ur6/vLxXPkkVMcP7fPBqNTkn2GKjFs14Roo9AuBaLuAWgGQIEyAtG+VSBhqn5a1lKvFo2o2y4+0HwopBboQXeEVk2zfDwcE15eXmV1iZHXJJ19Kyuru6lbveS8V2u7PTxgMGn+/r6Zo+Ojtagv6PapMY3VVlZ2VdbWzuk20WO0mEcB9tO4DyOuYdsmpViUHa70fnBluMP/REdHuLv4m+9TZfBiisd3xnE3B0ZGVmrbGadSqXK8HmM/fvGxkY5yewi6yTuyFKt47HJaTaXiH+EZxVE/wLwPEeYvTxcTv8rcWXDv5mnIDnNbyl+v5KkywMDA3aWZRfXKodSa8B2QvQbrziyFhgXvM+HhoaOCa4QfFeEoAWSB9gQi8147PaRadr96sTvArdFpniW36ACfhW8N35ttpHBULjwivCCsUcyGArIIdZiEkSf6WEr1dRiMdLQQGAsMHuegpkpA2OBTLE67sw+fOtgyEuBWULjAlgxFSAmsSnVpwmGTed0BqczGDYDYePfijWYDTtKTpKMieFlM3186Fk56v7z4VjUhZNk0mXIy1YUxKNRuMlRF+iuoOMBdE/XRfaymT5v0oUbb/zWKcDkG0zQkiX+nBns2AIvH+Ek3CzuFf8AfsHsoAT9OBhyl3AVx3bcZSxNuSDc7F3MXXg/jPMXFb84xFyqqqr6tpC/tIlPofZCduEinKTd9flNPlVwx5AOzQ+MJta/XEkPc9eVr2FvLFysPuHt+AiOk64GRrB8L/yOzP2k7C6CytjT07MQwEW8yrvetiGVxKc3yCcMweaOId8Ha8CeLboqZCsF9rN4PP5c2VT9Gs7q2UbFWjOcAAAAAElFTkSuQmCC);
+            background-size: 100% 100%;
+        }
+
+        .editormd-preview blockquote,
+        .editormd-preview-container blockquote {
+            font-style: inherit !important;
+        }
+
+
+        /*工具栏列表*/
+        #toolbar-list-div .toolbar-list-ul,
+        #toolbar-list-div .color-board {
+            position: absolute;
+            top: 42px;
+            background-color: #f1f3f7;
+            box-shadow: 0 2px 4px 0 #ccd0d7;
+            padding-inline-start: 0px;
+            margin-block-start: 0em;
+            margin-block-end: 0em;
+            z-index: 999999;
+            display: none;
+        }
+
+        #header-list-button i,
+        #font-size-list-button i,
+        #color-list-button i,
+        #hr-list-button i,
+        #align-list-button i,
+        #list-list-button i {
+            font-size: 16px !important;
+        }
+
+        #header-list-button i:after,
+        #font-size-list-button i:after,
+        #color-list-button i:after,
+        #hr-list-button i:after,
+        #align-list-button i:after,
+        #list-list-button i:after {
+            content: "";
+            display: block;
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-bottom: 4px solid black;
+            border-left: 4px solid transparent;
+            right: 1px;
+            bottom: 3px;
+        }
+
+        #toolbar-list-div li {
+            list-style: none;
+            font-size: 17px;
+            font-weight: 549;
+            border-bottom: 1px solid white;
+            text-align: left !important;
+            padding-left: 10px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+
+        #toolbar-list-div .toolbar-list-ul li:first-child {
+            border-top: 1px solid white;
+        }
+
+        #toolbar-list-div .toolbar-list-ul li:last-child {
+            border-bottom: none !important;
+        }
+
+        #toolbar-list-div .toolbar-list-ul li:hover {
+            border-width: 1px 1px 1px 1px !important;
+            border-style: solid !important;
+            border-color: #37c8f7 !important;
+            box-shadow: 0px 0px 5px #37c8f7;
+            cursor: pointer;
+        }
+
+        /*标题列表*/
+        #header-list-ul {
+            width: 130px;
+            height: 218px;
+            left: 154px;
+        }
+
+        #header-list-ul li h1 {
+            padding: 0px 5px 0px 0px;
+            margin: 0 !important;
+        }
+
+        /*字号列表*/
+        #font-size-list-ul {
+            width: 65px;
+            height: 140px;
+            left: 267px;
+        }
+
+        .font-size-12 {
+            font-size: 12px !important;
+        }
+
+        .font-size-16 {
+            font-size: 16px !important;
+        }
+
+        .font-size-20 {
+            font-size: 20px !important;
+        }
+
+        .font-size-23 {
+            font-size: 23px !important;
+        }
+
+        /*颜色列表*/
+        .color-board {
+            width: 172px;
+            height: 190px;
+            left: 295px;
+        }
+
+        .color-board .color-list {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            flex-wrap: wrap;
+            width: 172px;
+            padding: 8px;
+            margin-left: -8px;
+            margin-top: -8px;
+            margin-bottom: 0px;
+        }
+
+        .color-board .color-group {
+            padding: 10px 8px;
+            border-top: 1px solid #fff;
+            font-size: 12px;
+        }
+
+        .color-board .color-list li.color-block {
+            display: block;
+            padding: 0;
+            margin: 3px;
+            font-size: 0;
+        }
+
+        .color-board .color-block {
+            display: inline-block;
+            font-size: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            vertical-align: middle;
+            border: 1px solid transparent;
+        }
+
+        .color-board .color-block:hover {
+            cursor: pointer;
+            border: 1.5px solid white !important;
+        }
+
+        .color-board .color-block.color-default {
+            background-color: #222;
+            margin-left: 4px;
+            margin-right: 10px;
+        }
+
+        .color-default {
+            color: #222 !important;
+        }
+
+        .color-blue-01 {
+            color: rgb(137, 212, 255) !important;
+        }
+
+        .color-lblue-01 {
+            color: rgb(115, 253, 234) !important;
+        }
+
+        .color-green-01 {
+            color: rgb(137, 250, 78) !important;
+        }
+
+        .color-yellow-01 {
+            color: rgb(255, 243, 89) !important;
+        }
+
+        .color-pink-01 {
+            color: rgb(255, 150, 141) !important;
+        }
+
+        .color-purple-01 {
+            color: rgb(255, 160, 208) !important;
+        }
+
+        .color-blue-02 {
+            color: rgb(11, 132, 237) !important;
+        }
+
+        .color-lblue-02 {
+            color: rgb(24, 231, 207) !important;
+        }
+
+        .color-green-02 {
+            color: rgb(96, 216, 55) !important;
+        }
+
+        .color-yellow-02 {
+            color: rgb(251, 226, 49) !important;
+        }
+
+        .color-pink-02 {
+            color: rgb(255, 101, 78) !important;
+        }
+
+        .color-purple-02 {
+            color: rgb(234, 0, 119) !important;
+        }
+
+        .color-blue-03 {
+            color: rgb(1, 118, 186) !important;
+        }
+
+        .color-lblue-03 {
+            color: rgb(6, 143, 134) !important;
+        }
+
+        .color-green-03 {
+            color: rgb(29, 177, 0) !important;
+        }
+
+        .color-yellow-03 {
+            color: rgb(248, 186, 0) !important;
+        }
+
+        .color-pink-03 {
+            color: rgb(238, 35, 13) !important;
+        }
+
+        .color-purple-03 {
+            color: rgb(203, 41, 122) !important;
+        }
+
+        .color-blue-04 {
+            color: rgb(0, 78, 128) !important;
+        }
+
+        .color-lblue-04 {
+            color: rgb(1, 124, 118) !important;
+        }
+
+        .color-green-04 {
+            color: rgb(1, 112, 1) !important;
+        }
+
+        .color-yellow-04 {
+            color: rgb(255, 146, 1) !important;
+        }
+
+        .color-pink-04 {
+            color: rgb(180, 23, 0) !important;
+        }
+
+        .color-purple-04 {
+            color: rgb(153, 25, 94) !important;
+        }
+
+        .color-gray-01 {
+            color: rgb(214, 213, 213) !important;
+        }
+
+        .color-gray-02 {
+            color: rgb(146, 146, 146) !important;
+        }
+
+        .color-gray-03 {
+            color: rgb(95, 95, 95) !important;
+        }
+
+        /*分割线列表*/
+        #hr-list-ul {
+            width: 126px;
+            height: 180px;
+            left: 373px;
+        }
+
+        #hr-list-ul li[class*=cut-off] {
+            background-size: 87%;
+            background-position: 50%;
+            background-repeat: no-repeat;
+            height: 30px;
+            border-bottom: 1px solid #fff;
+            list-style: none;
+        }
+
+        #hr-list-ul li[class*=cut-off]:hover {
+            border-width: 1px 1px 1px 1px !important;
+            border-style: solid !important;
+            border-color: #37c8f7 !important;
+            box-shadow: 0px 0px 3px #37c8f7;
+            cursor: pointer;
+        }
+
+        #hr-list-ul li.cut-off-1 {
+            border-top: 1px solid #fff !important;
+            background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANwAAAACAQMAAAAJoCCdAAAAA1BMVEXn5+ckhukPAAAAC0lEQVQI12MgGwAAADoAAcydDOQAAAAASUVORK5CYII=);
+        }
+
+        #hr-list-ul li.cut-off-2 {
+            background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANwAAAAEAQMAAADf+cOAAAAABlBMVEUAAADAwMBkVjpxAAAAAXRSTlMAQObYZgAAACNJREFUCNdjwAv+///PYP///wH+//8/MP///wdJ4AN+SXwAAA2FJ9mRt+NcAAAAAElFTkSuQmCC);
+        }
+
+        #hr-list-ul li.cut-off-3 {
+            background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOAAAAAIBAMAAAASFO49AAAAElBMVEUAAADBwcHAwMDIyMjBwcHAwMCfBQ2IAAAABXRSTlMA5qYc7dRG+h8AAAA3SURBVCjPY2BWFDJgwApoJGUSGuqMXZpGUqqhoUHYpWkkJRoaGohdmjZSdLeQ7kFK90RD92wBAKa3JTGx+llKAAAAAElFTkSuQmCC);
+        }
+
+        #hr-list-ul li.cut-off-4 {
+            background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGwAAAAgCAMAAADAIm3oAAAAV1BMVEUAAABTU1NRUVFRUVFQUFBRUVFRUVFRUVFRUVFaWlpRUVFQUFBQUFBRUVFQUFBUVFT///9QUFCoqKj7+/uVlZXc3Ny5ublnZ2fo6OjFxcWgoKCFhYVZWVk+p4WsAAAAEHRSTlMAG6bmyb7z7WUKQ/ThflYtXXWmPgAAAPVJREFUSMfVltuOwjAMBZ00KbRcpw2U2/9/566QumYFRVkpXtF589PI1pFt+Via1skvXNuIFYHV7rHerQhiRANEeSACTowIwFbLLRDEihZYNz+NroFWzPDAZiw2gBcjlqHmiTospTwuMkEsn5EIQ+qeSAPE4jOE1O9f0CcoPcnA8O16aRuK578m7SdI1FIW6KZkHcxf1l9vF7Vcbtf+jzLnq8q7PNkZOI2uE3BWWY7DLQAWLkt2BA6j7AAcc2Tq8NzxhjJ1VNypDGXq+E+ZtmgXEHVoQOyir4786E+QHf3P3CDvF/GcT8z74znntyDj4ZnrK1eCLzWvNKtYZVlDAAAAAElFTkSuQmCC);
+            background-size: 50%;
+        }
+
+        #hr-list-ul li.cut-off-5 {
+            background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANwAAAAgCAMAAABO1ObRAAAAUVBMVEUAAABQUFBRUVFRUVH///9RUVFVVVVaWlpRUVFQUFBRUVFRUVFQUFBUVFRQUFD///+oqKj7+/uVlZXc3Ny5ublnZ2fo6OjFxcWgoKCFhYVZWVl/cI9bAAAADnRSTlMAyfS+AWUZCkPhqX5WLR8UqakAAADfSURBVFjD7djJDoIwFEbh2xYoTkeo4vT+D6ob4sjCGDX94dvd5Qmkk00+FOvK7lR1NBUOv7qdVx5XmIYIBLsRgMpEOGB5HZeAMxU1MIv9FGdAbTLmwKIfFsDcNBSl8zzxrhRYUqrAgJD9mlIE6FLzJHUQcv92JaR2/UKboLS8ObpL28u6Lvv9wJPWAxLe8gbNUFwDlrcRxLXH0+FadTgdW6G4PbDr23bAXihuC2z6uA2w/U0cX/FuHF+hHfdA67d8NC0o01Ywlk1cNE764Cx95ZG+rEo/M0g/EGk/7f3TGcEePW4Lb4xtAAAAAElFTkSuQmCC);
+        }
+
+        #hr-list-ul li.cut-off-6 {
+            background-image: url(data:image/png;base64,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);
+            border-bottom: none !important;
+        }
+
+        /*对齐列表*/
+        #align-list-ul {
+            width: 38px;
+            height: 93px;
+            left: 411px;
+        }
+
+        #align-list-ul li {
+            text-align: center !important;
+            padding-top: 1px;
+            padding-left: 0 !important;
+        }
+
+        /*列表*/
+        #list-list-ul {
+            width: 35px;
+            height: 62px;
+            left: 445px;
+        }
+
+        #list-list-ul li,
+        #align-list-ul li {
+            text-align: center !important;
+            padding-top: 2px;
+            padding-left: 0 !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="main-div">
+        <div id="editor-div">
+            <textarea id="editor-textarea" style="display:none;"></textarea>
+
+            <div id="toolbar-list-div">
+                <!-- 字号列表 -->
+                <ul id="font-size-list-ul" class="toolbar-list-ul">
+                    <li title="小字号" class="font-size-12">小</li>
+                    <li title="标准字号" class="font-size-16">标准</li>
+                    <li title="大字号" class="font-size-20">大</li>
+                    <li title="特大字号" class="font-size-23">特大</li>
+                </ul>
+
+                <!-- 标题列表 -->
+                <ul id="header-list-ul" class="toolbar-list-ul">
+                    <li>
+                        <h1 style="font-size: 25px;" title="插入一级标题 ( Ctrl+1 )">一级标题</a></h1>
+                    </li>
+                    <li>
+                        <h1 style="font-size: 23px;" title="插入二级标题 ( Ctrl+2 )">二级标题</h1>
+                    </li>
+                    <li>
+                        <h1 style="font-size: 21px;" title="插入三级标题 ( Ctrl+3 )">三级标题</h1>
+                    </li>
+                    <li>
+                        <h1 style="font-size: 18px;" title="插入四级标题 ( Ctrl+4 )">四级标题</h1>
+                    </li>
+                    <li>
+                        <h1 style="font-size: 15px;" title="插入五级标题 ( Ctrl+5 )">五级标题</h1>
+                    </li>
+                    <li>
+                        <h1 style="font-size: 12px;" title="插入六级标题 ( Ctrl+6 )">六级标题</h1>
+                    </li>
+                </ul>
+
+                <!-- 分割线列表 -->
+                <ul id="hr-list-ul" class="toolbar-list-ul">
+                    <li class="cut-off-1" title="插入分割线"></li>
+                    <li class="cut-off-2" title="插入分割线"></li>
+                    <li class="cut-off-3" title="插入分割线"></li>
+                    <li class="cut-off-4" title="插入分割线"></li>
+                    <li class="cut-off-5" title="插入分割线"></li>
+                    <li class="cut-off-6" title="插入分割线"></li>
+                </ul>
+
+                <!-- 颜色列表 -->
+                <div class="color-board" id="color-board-div">
+                    <div class="color-group">
+                        <span class="color-block color-default" id="color-default-span"></span>
+                        <span>默认颜色</span>
+                    </div>
+                    <div class="color-group">
+                        <ul class="color-list" id="color-list-ul">
+                            <li class="color-block color-blue-01"
+                                style="border-color: rgb(107, 195, 245); background-color: rgb(137, 212, 255);"></li>
+                            <li class="color-block color-lblue-01"
+                                style="border-color: rgb(98, 215, 199); background-color: rgb(115, 253, 234);"></li>
+                            <li class="color-block color-green-01"
+                                style="border-color: rgb(116, 213, 67); background-color: rgb(137, 250, 78);"></li>
+                            <li class="color-block color-yellow-01"
+                                style="border-color: rgb(218, 214, 87); background-color: rgb(255, 243, 89);"></li>
+                            <li class="color-block color-pink-01"
+                                style="border-color: rgb(217, 128, 120); background-color: rgb(255, 150, 141);"></li>
+                            <li class="color-block color-purple-01"
+                                style="border-color: rgb(243, 142, 193); background-color: rgb(255, 160, 208);"></li>
+                            <li class="color-block color-blue-02"
+                                style="border-color: rgb(8, 122, 192); background-color: rgb(11, 132, 237);"></li>
+                            <li class="color-block color-lblue-02"
+                                style="border-color: rgb(25, 196, 176); background-color: rgb(24, 231, 207);"></li>
+                            <li class="color-block color-green-02"
+                                style="border-color: rgb(83, 183, 49); background-color: rgb(96, 216, 55);"></li>
+                            <li class="color-block color-yellow-02"
+                                style="border-color: rgb(213, 192, 44); background-color: rgb(251, 226, 49);"></li>
+                            <li class="color-block color-pink-02"
+                                style="border-color: rgb(217, 84, 66); background-color: rgb(255, 101, 78);"></li>
+                            <li class="color-block color-purple-02"
+                                style="border-color: rgb(204, 37, 121); background-color: rgb(234, 0, 119);"></li>
+                            <li class="color-block color-blue-03"
+                                style="border-color: rgb(6, 101, 159); background-color: rgb(1, 118, 186);"></li>
+                            <li class="color-block color-lblue-03"
+                                style="border-color: rgb(0, 168, 158); background-color: rgb(6, 143, 134);"></li>
+                            <li class="color-block color-green-03"
+                                style="border-color: rgb(29, 150, 6); background-color: rgb(29, 177, 0);"></li>
+                            <li class="color-block color-yellow-03"
+                                style="border-color: rgb(210, 158, 4); background-color: rgb(248, 186, 0);"></li>
+                            <li class="color-block color-pink-03"
+                                style="border-color: rgb(202, 31, 12); background-color: rgb(238, 35, 13);"></li>
+                            <li class="color-block color-purple-03"
+                                style="border-color: rgb(173, 35, 105); background-color: rgb(203, 41, 122);"></li>
+                            <li class="color-block color-blue-04"
+                                style="border-color: rgb(2, 66, 109); background-color: rgb(0, 78, 128);"></li>
+                            <li class="color-block color-lblue-04"
+                                style="border-color: rgb(3, 106, 101); background-color: rgb(1, 124, 118);"></li>
+                            <li class="color-block color-green-04"
+                                style="border-color: rgb(5, 96, 4); background-color: rgb(1, 112, 1);"></li>
+                            <li class="color-block color-yellow-04"
+                                style="border-color: rgb(217, 126, 5); background-color: rgb(255, 146, 1);"></li>
+                            <li class="color-block color-pink-04"
+                                style="border-color: rgb(154, 21, 4); background-color: rgb(180, 23, 0);"></li>
+                            <li class="color-block color-purple-04"
+                                style="border-color: rgb(130, 22, 80); background-color: rgb(153, 25, 94);"></li>
+                            <li class="color-block color-gray-01"
+                                style="border-color: rgb(182, 181, 181); background-color: rgb(214, 213, 213);"></li>
+                            <li class="color-block color-gray-02"
+                                style="border-color: rgb(124, 124, 124); background-color: rgb(146, 146, 146);"></li>
+                            <li class="color-block color-gray-03"
+                                style="border-color: rgb(80, 80, 80); background-color: rgb(95, 95, 95);"></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 对齐列表 -->
+                <ul id="align-list-ul" class="toolbar-list-ul">
+                    <li><i class="fa fa-align-left" title="左对齐"></i></li>
+                    <li><i class="fa fa-align-center" title="居中对齐"></i></li>
+                    <li><i class="fa fa-align-right" title="右对齐"></i></li>
+                </ul>
+
+                <!-- 列表 -->
+                <ul id="list-list-ul" class="toolbar-list-ul">
+                    <li><i class="fa fa-list-ul" title="无序列表"></i></li>
+                    <li><i class="fa fa-list-ol" title="有序列表"></i></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script src="./static/marked/marked.min.js"></script>
+<script src="./static/jquery/jquery.min.js"></script>
+<script src="./static/editor.md/editormd.min.js"></script>
+<script src="./static/html-to-image/html-to-image.js"></script>
+
+<script type="text/javascript">
+    // 解析后的 html
+    var html;
+    // B站方法
+    var bilibili;
+    // B站 Markdown 方法
+    var bilibiliMarkdown;
+    // B站 Markdown 解析器
+    var bilibiliMarked;
+    // Markdown 编辑器
+    var markdownEditor;
+    // 工具栏列表
+    var toolbarList;
+
+    class Bilibili {
+        constructor() {
+            this.origin = "https://member.bilibili.com";
+            this.zlPath = "/platform/upload/text/edit";
+            this.prefixs = [
+                "https://i0.hdslb.com",
+                "http://article.biliimg.com",
+                "https://www.bilibili.com"
+            ];
+            this.hrPrefix = "https://i0.hdslb.com/bfs/article/";
+            this.hrSuffixs = [
+                "0117cbba35e51b0bce5f8c2f6a838e8a087e8ee7.png",
+                "4aa545dccf7de8d4a93c2b2b8e3265ac0a26d216.png",
+                "71bf2cd56882a2e97f8b3477c9256f8b09f361d3.png",
+                "db75225feabec8d8b64ee7d3c7165cd639554cbc.png",
+                "4adb9255ada5b97061e610b682b8636764fe50ed.png",
+                "02db465212d3c374a43c60fa2625cc1caeaab796.png",
+            ];
+        }
+        message(method, param) {
+            window.parent.postMessage({ method: method, param: param }, this.origin);
+        }
+        save(markdown, html, tables) {
+            this.message("save", { markdown: markdown, html: html, tables: tables });
+        }
+        loading() {
+            this.message("loading");
+        }
+        toBLink(link) {
+            this.message("toBLink", { link: link });
+        }
+        pcpreview() {
+            this.message("pcpreview");
+        }
+        mbpreview() {
+            this.message("mbpreview");
+        }
+        appendImage(image) {
+            this.message("appendImage", { image: image });
+        }
+        switchToHtmlEditor() {
+            this.message("switchToHtmlEditor");
+        }
+        switchToFullscreen(isFullscreen) {
+            this.message("switchToFullscreen", { isFullscreen: isFullscreen });
+        }
+        isBLink(link) {
+            for (let prefix of this.prefixs) {
+                if (link.startsWith(prefix)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    class BilibiliMarkdown {
+        constructor() {
+            this.parentOrigin = undefined;
+            this.addListener();
+        }
+        hello(param) {
+            this.parentOrigin = param.origin;
+        }
+        async save() {
+            bilibili.loading();
+            let tables = new Map;
+            let tableTags = document.getElementsByTagName("table");
+            if (tableTags) {
+                for (let tableTag of tableTags) {
+                    let key = `<table>${tableTag.innerHTML}</table>`;
+                    if (tables.get(key)) {
+                        continue;
+                    }
+                    tableTag.style.padding = "0px 0px 5px 0px";
+                    await htmlToImage.toBlob(tableTag).then(function (blob) {
+                        tables.set(key, new File([blob], Date.parse(new Date()) + ".png"));
+                        tableTag.style.padding = "0px 16px 5px 16px";
+                    });
+                }
+            }
+            bilibili.save(markdownEditor.editor.getMarkdown(), html, tables);
+        }
+        toBLink(param) {
+            let markdown = markdownEditor.editor.getMarkdown();
+            if (markdown) {
+                markdownEditor.editor.setMarkdown(markdown.replaceAll(param.link, param.bLink));
+            }
+        }
+        appendImage(param) {
+            markdownEditor.editor.replaceSelection("\n![](" + param.bLink + ")\n");
+        }
+        setMarkdown(param) {
+            markdownEditor.editor.setMarkdown(param.markdown);
+        }
+        addListener() {
+            // 监听父页面信息
+            window.addEventListener("message", function (event) {
+                let method = event.data.method;
+                let param = event.data.param;
+                if (param) {
+                    param.origin = event.origin;
+                } else {
+                    param = { origin: event.origin };
+                }
+                bilibiliMarkdown[method](param);
+            }, false);
+            // 监听键盘事件
+            window.onkeydown = async function () {
+                // 保存：Ctrl+S
+                if (event.ctrlKey && event.keyCode === 83 && !event.shiftKey) {
+                    event.preventDefault();
+                    bilibiliMarkdown.save();
+                }
+                // 全屏 / 退出全屏：Esc
+                if (event.keyCode === 27) {
+                    event.preventDefault();
+                    bilibili.switchToFullscreen();
+                }
+                // 实时预览：F8
+                if (event.keyCode === 119) {
+                    event.preventDefault();
+                    toolbarList.menus[18].getElementsByTagName("a")[0].click();
+                }
+                // 手机端预览：F9
+                if (event.keyCode === 120) {
+                    event.preventDefault();
+                    toolbarList.menus[19].getElementsByTagName("a")[0].click();
+                }
+                // 电脑端预览：F10
+                if (event.keyCode === 121) {
+                    event.preventDefault();
+                    toolbarList.menus[20].getElementsByTagName("a")[0].click();
+                }
+                // 全屏：F11
+                if (event.keyCode === 122) {
+                    event.preventDefault();
+                    bilibili.switchToFullscreen(true);
+                }
+            }
+            // 监听粘贴事件
+            document.getElementById("editor-div").addEventListener('paste', function (event) {
+                var items = (event.clipboardData || event.originalEvent.clipboardData).items;
+                for (let item of items) {
+                    // 图片
+                    if (item.kind == 'file' && item.type.match(/^image\//i)) {
+                        let filename = Date.parse(new Date()) + "." + item.type.replace("image/", "");
+                        let image = new File([item.getAsFile()], filename);
+                        bilibili.appendImage(image);
+                    }
+                }
+            });
+        }
+        checkParent() {
+            if (top == self) {
+                top.location.href = bilibili.origin + bilibili.zlPath;
+            } else {
+                setTimeout(() => {
+                    if (bilibiliMarkdown.parentOrigin != bilibili.origin) {
+                        console.log("parentOrigin: " + bilibiliMarkdown.parentOrigin);
+                        console.log("bilibili.origin: " + bilibili.origin);
+                        top.location.href = bilibili.origin + bilibili.zlPath;
+                    }
+                }, 2000);
+            }
+        }
+    }
+
+    class BilibiliMarked {
+        constructor() {
+            var bmarked = this;
+            this.toc = [];
+            const fontSize = [28, 26, 23, 21, 18, 15, 12];
+            const margin = [16, 16, 14, 12, 10, 8, 6];
+            const renderer = {
+                heading(text, level, raw, slugger) {
+                    var anchor = this.options.headerPrefix + raw.toLowerCase().replace(/<[^>]*>/g, "").replace(/[^\w\\u4e00-\\u9fa5]]+/g, '-');
+                    bmarked.toc.push({
+                        anchor: anchor,
+                        level: level,
+                        text: text
+                    });
+                    return `<h1 id="${anchor}" style="margin: ${margin[level]}px 0; font-size: ${fontSize[level]}px !important;">${text}</h1>\n`;
+                },
+                codespan(text) {
+                    return text;
+                },
+                code(code, language) {
+                    code = code.replace(/[<>&"]/g, function (c) { return { '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]; });
+                    let codecontent = code.replace(/[<>&"]/g, function (c) { return { '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]; });
+                    return `<figure class="code-box" contenteditable="false"><pre data-lang="text/html@html@HTML" class="language-${language}" codecontent="${codecontent}"><code class="language-${language}">${code}</code></pre></figure>`;
+                },
+                link(href, title, text) {
+                    if (bilibili.isBLink(href) || href === text || href.startsWith("#")) {
+                        return `<a href="${href}" target="_blank">${text}</a>`;
+                    }
+                    return `${text}: <a href="${href}">${href}</a>`;
+                },
+                image(href, title, text) {
+                    let className = "";
+                    if (text.match(/^cut-off-\d$/g)) {
+                        className = ` class="${text}"`;
+                    }
+                    if (href && href.startsWith("http") && !bilibili.isBLink(href)) {
+                        bilibili.loading();
+                        bilibili.toBLink(href);
+                    }
+                    return `<figure class="img-box" contenteditable="false"><img${className} style="margin: 0 !important;" referrerpolicy="no-referrer" alt="${text}" src="${href}"></figure>`;
+                },
+                table(header, body) {
+                    if (body) body = `<tbody>${body}</tbody>`;
+                    let tableHtml = '<table>\n'
+                        + '<thead>\n'
+                        + header
+                        + '</thead>\n'
+                        + body
+                        + '</table>\n';
+                    return tableHtml;
+                },
+                hr() {
+                    let src = bilibili.hrPrefix + bilibili.hrSuffixs[1];
+                    return `<figure class="img-box" contenteditable="false"><img referrerpolicy="no-referrer" src="${src}" class="cut-off-2"></figure>`;
+                },
+                paragraph(text) {
+                    if (text && text.startsWith('<figure class="img-box" contenteditable="false">')) {
+                        return text;
+                    }
+                    return `<p>${text}</p>\n`;
+                }
+            }
+            this.marked = marked;
+            this.marked.use({ renderer });
+        }
+        parse(src) {
+            this.toc = [];
+            html = this.marked.parse(src);
+            html = html.replace("<p>[TOC]</p>", this.buildToc());
+            return html;
+        }
+        buildToc() {
+            var ctx = [];
+            ctx.push('<ul>');
+            this.build(this.toc, 0, 0, ctx);
+            ctx.push("</ul>\n");
+            return ctx.join("");
+        }
+        build(coll, k, level, ctx) {
+            if (k >= coll.length || coll[k].level <= level) {
+                return k;
+            }
+            var node = coll[k];
+            ctx.push("<li><a href='#" + node.anchor + "'>" + node.text + "</a>");
+            k++;
+            var childCtx = [];
+            k = this.build(coll, k, node.level, childCtx);
+            if (childCtx.length > 0) {
+                ctx.push("<ul>");
+                childCtx.forEach(function (idm) {
+                    ctx.push(idm);
+                });
+                ctx.push("</ul>");
+            }
+            ctx.push("</li>");
+            k = this.build(coll, k, level, ctx);
+            return k;
+        }
+    }
+
+    class MarkdownEditor {
+        constructor() {
+            this.editor = this.create();
+        }
+        create() {
+            return editormd("editor-div", {
+                fontSize: "16px",
+                lineNumbers: false,
+                placeholder: " Markdown Here ",
+                path: "./static/editor.md/lib/",
+                lang: {
+                    toolbar: {
+                        html: "返回原编辑器",
+                        save: "保存 ( Ctrl+S )",
+                        mbpreview: "手机端预览 ( F9 )",
+                        pcpreview: "网页端预览 ( F10 )",
+                        fscreen: "全屏 ( Esc / F11 ) / 退出全屏 ( Esc )",
+                        color: "颜色",
+                        hr: "分割线 ( Ctrl+H )",
+                        bold: "加粗 ( Ctrl+B )",
+                        del: "删除线 ( Ctrl+Shift+S )",
+                        header: "插入一级标题 ( Ctrl+1 )",
+                        quote: "引用 ( Ctrl+Shift+Q )",
+                        watch: "关闭实时预览 ( F8 )",
+                        unwatch: "开启实时预览 ( F8 )",
+                        fontSize: "标准字号",
+                        align: "左对齐",
+                        list: "无序列表",
+                        undo: "撤销 ( Ctrl+Z )",
+                        redo: "重做 ( Ctrl+Y )"
+                    }
+                },
+                toolbarIconsClass: {
+                    html: "fa-html5",
+                    save: "fa-save",
+                    mbpreview: "fa-mobile-phone",
+                    pcpreview: "fa-desktop",
+                    fscreen: "fa-arrows-alt",
+                    hr: "",
+                    bold: "",
+                    del: "",
+                    align: "fa-align-left",
+                    list: "fa-list-ul"
+                },
+                toolbarIconTexts: {
+                    fontSize: '<span style="font-size: 15px;">标</span>',
+                    header: 'H<span style="font-size: 10px;">1</span>',
+                    color: 'A',
+                    hr: '---',
+                    bold: 'B',
+                    del: "<del>S</del>"
+                },
+                toolbarHandlers: {
+                    html: function (cm, icon, cursor, selection) {
+                        bilibili.switchToHtmlEditor();
+                    },
+                    save: function (cm, icon, cursor, selection) {
+                        bilibiliMarkdown.save();
+                    },
+                    mbpreview: function (cm, icon, cursor, selection) {
+                        bilibili.mbpreview();
+                    },
+                    pcpreview: function (cm, icon, cursor, selection) {
+                        bilibili.pcpreview();
+                    },
+                    fscreen: function (cm, icon, cursor, selection) {
+                        bilibili.switchToFullscreen();
+                    },
+                    header: function (cm, icon, cursor, selection) {
+                        markdownEditor.addHeader(toolbarList.current.header);
+                    },
+                    color: function (cm, icon, cursor, selection) {
+                        markdownEditor.addColor(toolbarList.current.color);
+                    },
+                    fontSize: function (cm, icon, cursor, selection) {
+                        markdownEditor.addFontSize(toolbarList.current.fontSize);
+                    },
+                    align: function (cm, icon, cursor, selection) {
+                        markdownEditor.addAlign(toolbarList.current.align);
+                    },
+                    list: function (cm, icon, cursor, selection) {
+                        markdownEditor.addList(toolbarList.current.list);
+                    }
+                },
+                toolbarIcons: function () {
+                    return [
+                        "html", "|",
+                        "save", "undo", "redo", "|",
+                        "header", "bold", "del", "|",
+                        "fontSize", "color", "|",
+                        "quote", "hr", "align", "list", "|",
+                        "watch", "mbpreview", "pcpreview", "|", "fscreen"
+                    ]
+                },
+                disabledKeyMaps: [
+                    "F9", "F10", "F11", "Ctrl-E", "Ctrl-Alt-G", "Ctrl-K", "Ctrl-I",
+                    "Shift-Ctrl-C", "Shift-Ctrl-K", "Shift-Alt-P", "Shift-Ctrl-Alt-U", "Shift-Ctrl-E"
+                ]
+            });
+        }
+        setParser(parser) {
+            let renderer = window.editormd.$marked.Renderer;
+            let setOptions = window.editormd.$marked.setOptions;
+            window.editormd.$marked = function (src, opt, callback) {
+                return parser.parse(src);
+            };
+            window.editormd.$marked.Renderer = renderer;
+            window.editormd.$marked.setOptions = setOptions;
+        }
+        replaceWithPrefixAndSuffix(prefix, suffix) {
+            prefix = prefix ? prefix : "";
+            suffix = suffix ? suffix : "";
+
+            let cm = this.editor.cm;
+            let cursor = cm.getCursor();
+            let selection = cm.getSelection();
+            cm.replaceSelection(prefix + selection + suffix);
+            cm.setCursor(cursor.line, cursor.ch + prefix.length);
+        }
+        replaceWithPrefix(prefix) {
+            let cm = this.editor.cm;
+            let cursor = cm.getCursor();
+            let selection = cm.getSelection();
+
+            if (selection) {
+                cm.replaceSelection(prefix + selection);
+            } else {
+                cm.setCursor(cursor.line, 0);
+                cm.replaceSelection(prefix + selection);
+            }
+            cm.setCursor(cursor.line, cursor.ch + prefix.length);
+        }
+
+        addHeader(level) {
+            let prefix = "";
+            while (level > 0) {
+                prefix = prefix + "#";
+                level--;
+            }
+            prefix = prefix + " ";
+            this.replaceWithPrefix(prefix);
+        }
+        addFontSize(className) {
+            this.replaceWithPrefixAndSuffix(`<span class="${className}">`, `</span>`);
+        }
+        addColor(className) {
+            this.replaceWithPrefixAndSuffix(`<span class="${className}">`, `</span>`);
+        }
+        addHr(className) {
+            let index = className[8] - 1;
+            this.editor.replaceSelection("\n![" + className + "](" + bilibili.hrPrefix + bilibili.hrSuffixs[index] + ")\n");
+        }
+        addAlign(className) {
+            let align = className.replace("fa fa-align-", "");
+            this.replaceWithPrefixAndSuffix(`<p style="text-align: ${align};">`, `</p>`);
+        }
+        addList(className) {
+            let list = className.replace("fa fa-list-", "");
+            let prefix = "- ";
+            if (list === "ol") {
+                prefix = "1. ";
+            }
+            this.replaceWithPrefix(prefix);
+        }
+    }
+
+    class ToolbarList {
+        constructor() {
+            this.menus = document.getElementsByClassName("editormd-menu")[0].getElementsByTagName("li");
+            this.cname = {
+                show: "show",
+                hide: "hide"
+            }
+            this.current = {
+                header: 1,
+                fontSize: "font-size-16",
+                color: "color-default",
+                align: "fa fa-align-left",
+                list: "fa fa-list-ul"
+            }
+            this.addHeaderList("header", 6);
+            this.addFontSizeList("font-size", 10);
+            this.addColorList("color", 11);
+            this.addHrList("hr", 14);
+            this.addAlignList("align", 15);
+            this.addListList("list", 16);
+        }
+        // 获取所有 li 元素
+        getList(id, index) {
+            let buttonId = id + "-list-button";
+            let listId = id + "-list-ul";
+            this.menus[index].id = buttonId;
+            let list = $(`#${listId}`);
+            let button = $(`#${buttonId}`);
+            button.hover(() => { this.show(list) }, () => { this.hide(list) });
+            list.hover(() => { this.show(list) }, () => { this.hide(list) });
+            return $(`#${listId} li`);
+        }
+        addHeaderList(id, index) {
+            let lis = this.getList(id, index);
+            for (let li of lis) {
+                li.addEventListener("click", (event) => {
+                    let title = event.target.title;
+                    if (!title) {
+                        title = event.target.innerHTML.match(/title="[^"]+"/g)[0];
+                        title = title.substring(7, title.length - 1);
+                    }
+                    let level = title.substring(14, 15);
+                    this.menus[index].getElementsByTagName("a")[0].title = title;
+                    this.menus[index].getElementsByTagName("span")[0].innerHTML = level;
+                    this.current.header = level;
+                    markdownEditor.addHeader(level);
+                });
+            }
+        }
+        addFontSizeList(id, index) {
+            let lis = this.getList(id, index);
+            for (let li of lis) {
+                li.addEventListener("click", (event) => {
+                    let className = event.target.className;
+                    this.current.fontSize = className;
+                    markdownEditor.addFontSize(className);
+                    this.menus[index].getElementsByTagName("span")[0].innerHTML = event.target.innerHTML.substring(0, 1);
+                    this.menus[index].getElementsByTagName("a")[0].title = event.target.title;
+                });
+            }
+        }
+        addColorList(id, index) {
+            let colorBoard = $(`#color-board-div`);
+            let buttonId = id + "-list-button";
+            let listId = id + "-list-ul";
+            this.menus[index].id = buttonId;
+            let list = $(`#${listId}`);
+            let button = $(`#${buttonId}`);
+            colorBoard.hover(() => { this.show(colorBoard) }, () => { this.hide(colorBoard) });
+            button.hover(() => { this.show(colorBoard) }, () => { this.hide(colorBoard) });
+            let lis = $(`#${listId} li`);
+            for (let li of lis) {
+                li.addEventListener("click", (event) => {
+                    let className = event.target.className;
+                    className = className.replace("color-block ", "");
+                    this.current.color = className;
+                    markdownEditor.addColor(className);
+                    this.menus[index].getElementsByTagName('i')[0].className = "fa " + className;
+                });
+            }
+
+            document.getElementById("color-default-span").addEventListener("click", (event) => {
+                this.current.color = "color-default";
+                markdownEditor.addColor("color-default");
+                this.menus[index].getElementsByTagName('i')[0].className = "fa ";
+            });
+        }
+        addHrList(id, index) {
+            let lis = this.getList(id, index);
+            for (let li of lis) {
+                li.addEventListener("click", (event) => {
+                    markdownEditor.addHr(event.target.className);
+                });
+            }
+        }
+        addAlignList(id, index) {
+            let lis = this.getList(id, index);
+            for (let li of lis) {
+                li.addEventListener("click", (event) => {
+                    let className = event.target.className;
+                    let title = event.target.title;
+                    if (!className) {
+                        className = event.target.innerHTML.match(/class="[^"]+"/g)[0];
+                        className = className.substring(7, className.length - 1);
+                        title = event.target.innerHTML.match(/title="[^"]+"/g)[0];
+                        title = title.substring(7, title.length - 1);
+                    }
+                    this.current.align = className;
+                    markdownEditor.addAlign(className);
+                    this.menus[index].getElementsByTagName('i')[0].className = className;
+                    this.menus[index].getElementsByTagName("a")[0].title = title;
+                });
+            }
+        }
+        addListList(id, index) {
+            let lis = this.getList(id, index);
+            for (let li of lis) {
+                li.addEventListener("click", (event) => {
+                    let className = event.target.className;
+                    let title = event.target.title;
+                    if (!className) {
+                        className = event.target.innerHTML.match(/class="[^"]+"/g)[0];
+                        className = className.substring(7, className.length - 1);
+                        title = event.target.innerHTML.match(/title="[^"]+"/g)[0];
+                        title = title.substring(7, title.length - 1);
+                    }
+                    this.current.list = className;
+                    markdownEditor.addList(className);
+                    this.menus[index].getElementsByTagName('i')[0].className = className;
+                    this.menus[index].getElementsByTagName("a")[0].title = title;
+                });
+            }
+        }
+
+        show(list) {
+            list.addClass(this.cname.show);
+            list.removeClass(this.cname.hide);
+        }
+        hide(list) {
+            list.addClass(this.cname.hide);
+            list.removeClass(this.cname.show);
+        }
+    }
+
+    bilibili = new Bilibili();
+    bilibiliMarkdown = new BilibiliMarkdown();
+    bilibiliMarked = new BilibiliMarked();
+    markdownEditor = new MarkdownEditor();
+
+    window.onload = function () {
+        bilibiliMarkdown.checkParent();
+        markdownEditor.setParser(bilibiliMarked);
+        toolbarList = new ToolbarList();
+    }
+</script>
+
+</html>
