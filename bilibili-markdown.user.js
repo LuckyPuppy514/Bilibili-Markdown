@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                    Bilibili-Markdown
 // @namespace               https://github.com/LuckyPuppy514
-// @version                 1.0.0
+// @version                 1.0.1
 // @author                  LuckyPuppy514
 // @copyright               2022, Grant LuckyPuppy514 (https://github.com/LuckyPuppy514)
 // @license                 MIT
