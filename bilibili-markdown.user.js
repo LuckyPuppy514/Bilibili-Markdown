@@ -8,8 +8,8 @@
 // @description             B站专栏 Markdown 编辑器
 // @homepage                https://github.com/LuckyPuppy514/Bilibili-Markdown
 // @icon                    http://article.biliimg.com/bfs/article/3e927f211d063b57cd39c4041ac2d07fd959726c.png
-// @updateURL               https://greasyfork.org/zh-CN/scripts/444056-play-with-mpv
-// @downloadURL             https://greasyfork.org/zh-CN/scripts/444056-play-with-mpv
+// @updateURL               https://greasyfork.org/zh-CN/scripts/452683-bilibili-markdown
+// @downloadURL             https://greasyfork.org/zh-CN/scripts/452683-bilibili-markdown
 // @match                   https://member.bilibili.com/article-text/home*
 // @require                 https://unpkg.com/jquery@3.2.1/dist/jquery.min.js
 // ==/UserScript==
