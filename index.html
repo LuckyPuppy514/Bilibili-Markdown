@@ -1029,9 +1029,9 @@
                     return `<figure class="img-box" contenteditable="false"><img referrerpolicy="no-referrer" src="${src}" class="cut-off-2"></figure>`;
                 },
                 paragraph(text) {
-                    let formula = text.match(/^(\${1,2})([^$][\s\S]+[^$])\1$/);
-                    if (formula && formula.length > 2 && formula[2]) {
-                        return this.formula(formula[2]);
+                    let formulas = text.match(/^(\${1,2})([^$][\s\S]+[^$])\1$/);
+                    if (formulas && formulas.length > 2 && formulas[2]) {
+                        return this.formula(formulas[2]);
                     }
                     if (text && text.startsWith('< class="img-box" contenteditable="false">')) {
                         return text;
@@ -1043,7 +1043,7 @@
                         return { '&lt;': '<', '&gt;': '>', '&amp;': '&', '&quot;': '"' }[c];
                     });
                     formula = formula.replace(/\\[\t\s]*\n/g, "\\\\\n");
-                    formula = encodeURIComponent(formula.replaceAll("&amp;", "&"));
+                    formula = encodeURIComponent(formula);
                     let src = `https://api.bilibili.com/x/web-frontend/mathjax/tex?formula=${formula}`;
                     return `<img type="latex" class="latex" src="${src}">`;
                 }
