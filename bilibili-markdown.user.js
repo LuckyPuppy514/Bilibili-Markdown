@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name                    Bilibili-Markdown
 // @namespace               https://github.com/LuckyPuppy514
-// @version                 1.0.1
+// @version                 1.0.2
 // @author                  LuckyPuppy514
-// @copyright               2022, Grant LuckyPuppy514 (https://github.com/LuckyPuppy514)
+// @copyright               2023, Grant LuckyPuppy514 (https://github.com/LuckyPuppy514)
 // @license                 MIT
 // @description             B站专栏 Markdown 编辑器
 // @homepage                https://github.com/LuckyPuppy514/Bilibili-Markdown
@@ -24,7 +24,7 @@ console.log(`
 Ⓜ️                                                       🅱️
 🅱️  https://github.com/LuckyPuppy514/Bilibili-Markdown   Ⓜ️
 Ⓜ️                                                       🅱️
-🅱️                  2022 @LuckyPuppy514                  Ⓜ️
+🅱️                  2023 @LuckyPuppy514                  Ⓜ️
 Ⓜ️                                                       🅱️
 🅱️Ⓜ️🅱️Ⓜ️🅱️Ⓜ️🅱️Ⓜ️🅱️Ⓜ️🅱️Ⓜ️🅱️Ⓜ️🅱️Ⓜ️🅱️Ⓜ️🅱️Ⓜ️🅱️Ⓜ️🅱️Ⓜ️
 

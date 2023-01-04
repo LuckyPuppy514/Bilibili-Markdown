@@ -160,6 +160,40 @@ system.out.println("hello world");
 - 🔥 多级目录，返回原编辑器后，会自动变乱
 - 🔥 所以现阶段不建议使用
 
+### 11. 公式（LaTex）
+
+单行
+
+$\lim_{n\rightarrow+\infty}n$
+
+```text
+$\lim_{n\rightarrow+\infty}n$
+```
+
+多行
+
+$$
+y=
+\begin{cases}
+-x,\quad x\leq 0\\
+x, \quad x>0
+\end{cases}
+\tag{1}
+$$
+
+```text
+$$
+y=
+\begin{cases}
+-x,\quad x\leq 0\\
+x, \quad x>0
+\end{cases}
+\tag{1}
+$$
+```
+
+> 更多公式可参考: [https://blog.csdn.net/konglongdanfo1/article/details/85204312](https://blog.csdn.net/konglongdanfo1/article/details/85204312)
+
 ## 🅱️ B站专属
 
 ### 1. 字号
