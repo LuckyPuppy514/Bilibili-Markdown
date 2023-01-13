@@ -1029,9 +1029,9 @@
                     return `<figure class="img-box" contenteditable="false"><img referrerpolicy="no-referrer" src="${src}" class="cut-off-2"></figure>`;
                 },
                 paragraph(text) {
-                    let formulas = text.match(/^(\${1,2})([^$][\s\S]+[^$])\1$/);
-                    if (formulas && formulas.length > 2 && formulas[2]) {
-                        return this.formula(formulas[2]);
+                    let formulas = text.match(/^([^$]*)(\${1,2})([^$][\s\S]+[^$])\2([^$]*)$/);
+                    if (formulas && formulas[3]) {
+                        return formulas[1] + this.formula(formulas[3]) + formulas[4];
                     }
                     if (text && text.startsWith('< class="img-box" contenteditable="false">')) {
                         return text;
