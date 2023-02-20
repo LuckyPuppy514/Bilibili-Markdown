@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                    Bilibili-Markdown
 // @namespace               https://github.com/LuckyPuppy514
-// @version                 1.0.2
+// @version                 1.0.3
 // @author                  LuckyPuppy514
 // @copyright               2023, Grant LuckyPuppy514 (https://github.com/LuckyPuppy514)
 // @license                 MIT
@@ -139,8 +139,8 @@ const CSS = `
     box-shadow: 0px 0px 10px rgba(119, 199, 104, 0.9);
 }
 /*手机端预览*/
-.preview-mask[data-v-e7c642f4],
-.preview-mask .preview-content[data-v-e7c642f4] {
+.preview-mask,
+.preview-mask .preview-content {
     padding-top: 35px !important;
     z-index: ${zIndex.first} !important;
 }
@@ -217,6 +217,38 @@ function Toast(msg, duration) {
         setTimeout(function () { document.body.removeChild(div) }, 500);
     }, duration);
 }
+// webp 转 jpg
+function webpToJpg(webp) {
+    return new Promise(function (resolve, reject) {
+        let image = new Image();
+        image.src = URL.createObjectURL(webp);
+        image.onload = function () {
+            let canvas = document.createElement("canvas");
+            canvas.width = image.width;
+            canvas.height = image.height;
+            canvas.getContext("2d").drawImage(image, 0, 0);
+            let blob = dataURLtoBlob(canvas.toDataURL("image/jpeg"));
+            file = new File([blob], blob.name, {
+                type: blob.type,
+            });
+            resolve(file);
+        }
+    });
+}
+function dataURLtoBlob(dataurl) {
+    var arr = dataurl.split(','),
+        mime = arr[0].match(/:(.*?);/)[1],
+        bstr = atob(arr[1]),
+        n = bstr.length,
+        u8arr = new Uint8Array(n);
+    while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new Blob([u8arr], { type: mime });
+}
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 class Bilibili {
     constructor() {
@@ -232,6 +264,8 @@ class Bilibili {
         this.csrf = this.getCsrf();
         this.aid = this.getAidFromLocation();
         this.addListener();
+        this.uploading = 0;
+        this.uploadList = new Map();
     }
     getCsrf() {
         let cookie = document.cookie;
@@ -343,8 +377,8 @@ class Bilibili {
             document.getElementsByClassName("ui-btn white")[1].click();
         }
     }
-    appendImage(param) {
-        bilibiliMarkdown.appendImage(this.uploadImage(param.image));
+    async appendImage(param) {
+        bilibiliMarkdown.appendImage(await this.uploadImage(param.image));
     }
     toBLink(param) {
         this.loading();
@@ -352,19 +386,41 @@ class Bilibili {
         let xhr = new XMLHttpRequest();
         xhr.open("get", link, true);
         xhr.responseType = "blob";
-        xhr.onload = function () {
+        xhr.onload = async function () {
             let image = new File([xhr.response], link.substring(link.lastIndexOf('/') + 1));
-            let bLink = bilibili.uploadImage(image);
+            let bLink = await bilibili.uploadImage(image);
             bilibiliMarkdown.toBLink(link, bLink);
             bilibili.hideLoading();
         }
         xhr.send();
     }
-    uploadImage(image) {
-        let bLink = "图片上传B站失败，请重试";
+    async uploadImage(image) {
+        let name = image.name;
+        let bLink = this.uploadList.get(name);
+        if (bLink) {
+            if(bLink == "uploading"){
+                return undefined;
+            } else {
+                return bLink;
+            }
+        } else {
+            this.uploadList.set(name, "uploading");
+        }
+        // webp 转 jpg
+        if (name.endsWith(".webp")) {
+            image = await webpToJpg(image);
+        }
+        bLink = "图片上传B站失败，请重试";
         let formData = new FormData();
         formData.append("binary", image);
         formData.append("csrf", this.csrf);
+
+        // 限制上传频率
+        let that = this;
+        while (that.uploading > 0) {
+            await sleep(waitTime.normal);
+        }
+        that.uploading++;
         $.ajax({
             type: "POST",
             contentType: false,
@@ -378,29 +434,36 @@ class Bilibili {
             success: function (res) {
                 if (res && res.data) {
                     bLink = res.data.url;
+                    that.uploadList.set(name, bLink);
                 } else {
+                    that.uploadList.delete(name);
                     Toast("上传失败：" + JSON.stringify(res));
                 }
             }
         })
+
+        // 释放限制频率锁
+        setTimeout(() => {
+            that.uploading--;
+        }, waitTime.normal);
         return bLink;
     }
-    tableToImage(html, tables) {
+    async tableToImage(html, tables) {
         if (tables && tables.size > 0) {
             for (let [oldHtml, image] of tables) {
-                let bLink = this.uploadImage(image);
+                let bLink = await this.uploadImage(image);
                 let newHtml = `<figure contenteditable="false" class="img-box"><img referrerpolicy="no-referrer" src="${bLink}"><figcaption class="caption" contenteditable="false"></figcaption></figure>`;
                 html = html.replaceAll(oldHtml, newHtml);
             }
         }
         return html;
     }
-    save(param) {
+    async save(param) {
         let html = param.html ? param.html : "";
         // 保存到本地
         localStorage.setItem(PREFIX + this.aid, param.markdown);
         // 表格转图片
-        html = this.tableToImage(html, param.tables);
+        html = await this.tableToImage(html, param.tables);
         // 提取内容
         let words = html.replace(/<(h[1-6]|code)[^>]*>[^<]*<\/\1>/g, "")
             .replace(/<[^>]*>/g, "")
@@ -443,7 +506,7 @@ class Bilibili {
                     Toast("保存失败: " + JSON.stringify(res));
                 }
             },
-            error: function(err){
+            error: function (err) {
                 Toast("保存失败: " + JSON.stringify(err.message));
             }
         });
@@ -480,7 +543,9 @@ class BilibiliMarkdown {
         this.message(this.save.name);
     }
     toBLink(link, bLink) {
-        this.message(this.toBLink.name, { link: link, bLink: bLink });
+        if(bLink){
+            this.message(this.toBLink.name, { link: link, bLink: bLink });
+        }
     }
     appendImage(bLink) {
         this.message(this.appendImage.name, { bLink: bLink });
@@ -493,7 +558,7 @@ class BilibiliMarkdown {
 window.onload = function () {
     setTimeout(() => {
         let saveButton = document.getElementsByClassName("ui-btn white")[0];
-        if(!saveButton || saveButton.innerHTML != "存草稿"){
+        if (!saveButton || saveButton.innerHTML != "存草稿") {
             console.log("文章已提交");
             return;
         }
