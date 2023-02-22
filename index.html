@@ -951,7 +951,7 @@
                 for (let item of items) {
                     // 图片
                     if (item.kind == 'file' && item.type.match(/^image\//i)) {
-                        let filename = Date.parse(new Date()) + "." + item.type.replace("image/", "");
+                        let filename = new Date().getTime() + "." + item.type.replace("image/", "");
                         let image = new File([item.getAsFile()], filename);
                         bilibili.appendImage(image);
                     }
