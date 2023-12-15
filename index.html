@@ -1029,6 +1029,9 @@
                     return `<figure class="img-box" contenteditable="false"><img referrerpolicy="no-referrer" src="${src}" class="cut-off-2"></figure>`;
                 },
                 paragraph(text) {
+                    if(text.match(/(\${1,2})[^\s^$][^$]*\1/g)) {
+                        return text.replace(/(\${1,2})[^\s^$][^$]*\1/g, this.formula) + '<br>';
+                    }
                     let formulas = text.match(/^([^$]*)(\${1,2})([^$][\s\S]*[^$]*)\2([^$]*)$/);
                     if (formulas && formulas[3]) {
                         return formulas[1] + this.formula(formulas[3]) + formulas[4];
@@ -1039,6 +1042,8 @@
                     return `<p>${text}</p>\n`;
                 },
                 formula(formula) {
+                    formula = formula.replace(/^[$]*/, "");
+                    formula = formula.replace(/[$]*$/, "");
                     formula = formula.replace(/(&lt;|&gt;|&amp;|&quot;)/g, function (c) { 
                         return { '&lt;': '<', '&gt;': '>', '&amp;': '&', '&quot;': '"' }[c];
                     });
