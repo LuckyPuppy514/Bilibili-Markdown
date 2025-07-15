@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                    Bilibili-Markdown
 // @namespace               https://github.com/LuckyPuppy514
-// @version                 1.0.3
+// @version                 1.0.4
 // @author                  LuckyPuppy514
 // @copyright               2023, Grant LuckyPuppy514 (https://github.com/LuckyPuppy514)
 // @license                 MIT
@@ -11,7 +11,10 @@
 // @updateURL               https://greasyfork.org/zh-CN/scripts/452683-bilibili-markdown
 // @downloadURL             https://greasyfork.org/zh-CN/scripts/452683-bilibili-markdown
 // @match                   https://member.bilibili.com/article-text/home*
+// @connect                 github.com
+// @connect                 raw.githubusercontent.com
 // @require                 https://unpkg.com/jquery@3.2.1/dist/jquery.min.js
+// @grant                   GM.xmlHttpRequest
 // ==/UserScript==
 
 "use strict";
@@ -154,11 +157,13 @@ function appendCSS() {
     css.innerHTML = CSS.trim();
     document.head.appendChild(css);
 }
+
 function appendHTML() {
     let div = document.createElement("div");
     div.innerHTML = HTML.trim();
     document.getElementsByClassName("editor-wrap")[0].appendChild(div);
 }
+
 function appendSwitchToMarkdownEditorButton() {
     let button = document.createElement('li');
     button.id = eid.button.switchToHtmlEditor;
@@ -166,6 +171,7 @@ function appendSwitchToMarkdownEditorButton() {
     button.innerHTML = 'Ⓜ️';
     document.getElementsByClassName('editor-toolbar clearfix')[0].prepend(button);
 }
+
 function getAllElement() {
     elements.switchToMarkdownEditorButton = document.getElementById(eid.button.switchToHtmlEditor);
     elements.mainIframe = document.getElementById(eid.iframe.main);
@@ -177,6 +183,7 @@ function getAllElement() {
     elements.loading.innerHTML = elements.loading.innerHTML.replace("玩儿命加载中", "处理中，请稍后");
     elements.loading.style.zIndex = zIndex.first;
 }
+
 function addListener() {
     elements.switchToMarkdownEditorButton.onclick = async function () {
         if (!bilibili.aid) {
@@ -214,7 +221,9 @@ function Toast(msg, duration) {
     document.body.appendChild(div);
     setTimeout(function () {
         div.style.opacity = "0";
-        setTimeout(function () { document.body.removeChild(div) }, 500);
+        setTimeout(function () {
+            document.body.removeChild(div)
+        }, 500);
     }, duration);
 }
 // webp 转 jpg
@@ -235,6 +244,7 @@ function webpToJpg(webp) {
         }
     });
 }
+
 function dataURLtoBlob(dataurl) {
     var arr = dataurl.split(','),
         mime = arr[0].match(/:(.*?);/)[1],
@@ -244,8 +254,11 @@ function dataURLtoBlob(dataurl) {
     while (n--) {
         u8arr[n] = bstr.charCodeAt(n);
     }
-    return new Blob([u8arr], { type: mime });
+    return new Blob([u8arr], {
+        type: mime
+    });
 }
+
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -352,6 +365,7 @@ class Bilibili {
             elements.mainIframe.className = cname.fullscreen;
             document.body.style.overflowY = "hidden";
         }
+
         function exitFullscreen() {
             localStorage.removeItem(key.isFullscreen);
             elements.mainIframe.className = "";
@@ -383,22 +397,27 @@ class Bilibili {
     toBLink(param) {
         this.loading();
         let link = param.link;
-        let xhr = new XMLHttpRequest();
-        xhr.open("get", link, true);
-        xhr.responseType = "blob";
-        xhr.onload = async function () {
-            let image = new File([xhr.response], link.substring(link.lastIndexOf('/') + 1));
-            let bLink = await bilibili.uploadImage(image);
-            bilibiliMarkdown.toBLink(link, bLink);
-            bilibili.hideLoading();
-        }
-        xhr.send();
+        GM.xmlHttpRequest({
+            method: "GET",
+            url: link,
+            responseType: "blob",
+            onload: async function (response) {
+                let image = new File([response.response], link.substring(link.lastIndexOf('/') + 1));
+                let bLink = await bilibili.uploadImage(image);
+                bilibiliMarkdown.toBLink(link, bLink);
+                bilibili.hideLoading();
+            },
+            onerror: function (error) {
+                console.error("请求失败:", error);
+                bilibili.hideLoading();
+            }
+        });
     }
     async uploadImage(image) {
         let name = image.name;
         let bLink = this.uploadList.get(name);
         if (bLink) {
-            if(bLink == "uploading"){
+            if (bLink == "uploading") {
                 return undefined;
             } else {
                 return bLink;
@@ -534,7 +553,10 @@ class BilibiliMarkdown {
         }, waitTime.short);
     }
     message(method, param) {
-        elements.mainIframe.contentWindow.postMessage({ method: method, param: param }, BILIBILI_MARKDOWN_URL);
+        elements.mainIframe.contentWindow.postMessage({
+            method: method,
+            param: param
+        }, BILIBILI_MARKDOWN_URL);
     }
     hello() {
         this.message(this.hello.name);
@@ -543,15 +565,22 @@ class BilibiliMarkdown {
         this.message(this.save.name);
     }
     toBLink(link, bLink) {
-        if(bLink){
-            this.message(this.toBLink.name, { link: link, bLink: bLink });
+        if (bLink) {
+            this.message(this.toBLink.name, {
+                link: link,
+                bLink: bLink
+            });
         }
     }
     appendImage(bLink) {
-        this.message(this.appendImage.name, { bLink: bLink });
+        this.message(this.appendImage.name, {
+            bLink: bLink
+        });
     }
     setMarkdown(markdown) {
-        this.message(this.setMarkdown.name, { markdown: markdown });
+        this.message(this.setMarkdown.name, {
+            markdown: markdown
+        });
     }
 }
 
